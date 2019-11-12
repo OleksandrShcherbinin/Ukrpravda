@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+<body>
+	<div class="spinner-cover">
+		<div class="spinner-inner">
+			<div class="spinner">
+			  <div class="rect1"></div>
+			  <div class="rect2"></div>
+			  <div class="rect3"></div>
+			  <div class="rect4"></div>
+			  <div class="rect5"></div>
+			</div>
+		</div>
+	</div>
+	<div id="wrapper">
+		<div id="page-content-wrapper">
+			{% include 'header.html' %}
+			<div class="container-fluid">
+				<div class="container animate-box">
+						<div class="grid-wrap nr1 section_margin">
+
+                            <div class="grid-post nr-1 style-1 ">
+								<div class="wrap">
+									<div class="altpost-image">
+										<img src="{{ big_news.image.url }}" alt=""/>
+									</div>
+								</div>
+								<div class="grid-caption">
+									<div class="post_meta">
+										<span class="meta_categories"><a>Articles</a></span>
+									</div>
+									<h2><a title="" href="{% url 's_article' big_news.slug %}">{{ big_news.title }}</a></h2>
+									<div class="post_meta">
+										<span class="meta_date">{{ big_news.article_date }}</span>
+									</div>
+								</div>
+							</div>
+							{% for fresh in fresh_news %}
+                            <div class="grid-post nr-2 style-1 ">
+								<div class="wrap">
+									<div class="altpost-image">
+										<img src="{{ fresh.image.url }}" alt=""/>
+									</div>
+								</div>
+								<div class="grid-caption">
+									<div class="post_meta">
+										<span class="meta_categories"><a href="http://demos.alithemes.com/html/hewo/archive.html">News</a></span>
+									</div>
+									<h2><a title="" href="{% url 's_article' fresh.slug %}">{{ fresh.title }}</a></h2>
+								</div>
+							</div>
+                            {% endfor %}
+						</div>
+				</div>
+			</div> <!--end featured grid-->
+			<div class="container-fluid">
+				<div class="container">
+					<div class="primary margin-15">
+					<div class="row">
+						<div class="col-md-8">
+							<div class="post_list post_list_style_1">
+								<div class="alith_heading">
+									<h2 class="alith_heading_patern_2">FRESH NEWS FROM UKRAINE</h2>
+								</div>
+								{% for article in news %}
+                                <article class="row section_margin animate-box">
+									<div class="col-md-3 animate-box">
+										<figure class="alith_news_img"><a href="{% url 's_article' article.slug %}"><img src="{{ article.image.url }}" alt=""/></a></figure>
+									</div>
+									<div class="col-md-9 animate-box">
+										<h3 class="alith_post_title"><a href="{% url 's_article' article.slug %}">{{ article.title }}</a></h3>
+										<div class="post_meta">
+											<span class="meta_date">{{ article.article_date }}</span>
+										</div>
+									</div>
+								</article>
+								{% endfor %}
+							</div>
+							{% include 'paginator.html' %}
+							</div>
+						</div>
+
+						<!--End Sidebar-->
+					</div>
+					</div> <!--.primary-->
+
+				</div>
+			</div>
+            {% include 'pre_footer_article.html' %}
+			</div>
+			{% include 'footer.html' %}
+			<div class="gototop js-top">
+				<a href="home-grid.html#" class="js-gotop"><span>Take Me Top</span></a>
+			</div>
+	    <div> <!--page-content-wrapper-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+		<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
+		<script src="{% static 'js/jquery.slicknav.min.js' %}"></script>
+		<script src="{% static 'js/masonry.pkgd.min.js' %}"></script>
+		<!-- Main -->
+		<script src="{% static 'js/main.js' %}"></script>
+		<script src="{% static 'js/smart-sticky.js' %}"></script>
+		<script src="{% static 'js/theia-sticky-sidebar.js' %}"></script>
+	</div> <!--#wrapper-->
+</body>
+{% endblock %}

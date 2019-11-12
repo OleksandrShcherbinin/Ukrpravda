@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+<body>
+	<div class="spinner-cover">
+		<div class="spinner-inner">
+			<div class="spinner">
+			  <div class="rect1"></div>
+			  <div class="rect2"></div>
+			  <div class="rect3"></div>
+			  <div class="rect4"></div>
+			  <div class="rect5"></div>
+			</div>
+		</div>
+	</div>
+	<div id="wrapper">		
+		<div id="page-content-wrapper">
+            {% include 'header.html' %}
+			<div class="container-fluid">
+				<div class="container animate-box">
+					<div class="row">
+						<div class="archive-header">
+							<div class="archive-title"><h2>COLUMNS</h2></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="container-fluid">
+				<div class="container">
+					<div class="primary margin-15">
+					<div class="row">
+						<div class="col-md-8">
+							<div class="post_list grid-blance">
+								<div class="row">
+									{% for article in news %}
+                                    <article class="col-md-6 animate-box section_margin">
+										<div class="wrap">
+											<figure class="alith_news_img">
+												<span class="post_meta_categories_label">Politics</span>
+												<a href="{% url 's_column' article.slug %}"><img src="{{ article.image.url }}" alt=""/></a>
+											</figure>
+										</div>
+										<h3 class="alith_post_title"><a href="{% url 's_column' article.slug %}">{{ article.title }}</a></h3>
+										<div class="post_meta">
+
+											<span class="meta_author_name"><a href="page-author.html" class="author">{{ article.author_tag }}</a></span>
+											<span class="meta_date">{{ article.column_date }}</span>
+										</div>
+										<p class="alith_post_except">{{ article.column_text | safe | truncatewords_html:20 }}</p>
+										<div class="line-space"></div>
+									</article>
+									{% endfor %}
+								</div>
+							</div>
+							{% include 'paginator.html' %}
+						</div>
+						<!--Start Sidebar-->
+						<aside class="col-md-4 sidebar_right">
+							<div class="sidebar-widget animate-box">					
+								<div class="widget-title-cover"><h4 class="widget-title"><span>Popular Articles</span></h4></div>
+								<div class="latest_style_1">  
+									{% for pop_art in popular_news %}
+                                    <div class="latest_style_1_item">
+									  <span class="item-count vertical-align">{{ forloop.counter }}</span>
+										<div class="alith_post_title_small">
+											<a href="{% url 's_column' pop_art.slug %}"><strong>{{ pop_art.title | truncatechars:30 | lower}}</strong></a><p class="meta"><span>{{ pop_art.column_date }}</span> <span>{{ pop_art.source_reviews }}</span></p>
+										</div>
+										<figure class="alith_news_img"><a href="{% url 's_column' pop_art.slug %}"><img src="{{ pop_art.image.url }}" alt=""/></a></figure>
+									</div>
+                                    {% endfor %}
+								</div>
+							</div> <!--.sidebar-widget-->
+							
+							<div class="sidebar-widget animate-box">
+								<div class="widget-title-cover"><h4 class="widget-title"><span>Search</span></h4></div>
+								<form action="category-grid.html#" class="search-form" method="get" role="search"> 
+									<label> 
+										<input type="search" name="s" value="" placeholder="Search …" class="search-field"> 
+									</label> 
+										<input type="submit" value="Search" class="search-submit">
+								</form>
+							</div> <!--.sidebar-widget-->
+							
+							<div class="sidebar-widget animate-box">					
+								<div class="widget-title-cover"><h4 class="widget-title"><span>Trending</span></h4></div>
+								<div class="latest_style_2">  
+									<div class="latest_style_2_item_first">							                                                  
+										<figure class="alith_post_thumb_big">
+											<span class="post_meta_categories_label">Legal, Blog</span>
+											<a href="single.html"><img src="{% static 'images/thumb-large.jpg' %}" alt=""/></a>
+										</figure>
+										<h3 class="alith_post_title">
+											<a href="single.html"><strong>Nor again is there anyone who loves or pursues or desires to obtain</strong></a>
+										</h3>
+									</div>
+									<div class="latest_style_2_item">
+										<figure class="alith_news_img"><a href="single.html"><img src="{% static 'images/thumb-square-1.png' %}" alt=""/></a></figure>
+										<h3 class="alith_post_title"><a href="single.html">Magna aliqua ut enim ad minim veniam</a></h3>
+										<div class="post_meta">			
+											<span class="meta_date">18 Sep, 2018</span>
+										</div>
+									</div>
+									<div class="latest_style_2_item">
+										<figure class="alith_news_img"><a href="single.html"><img src="{% static 'images/thumb-square-2.png' %}" alt=""/></a></figure>
+										<h3 class="alith_post_title"><a href="single.html">Magna aliqua ut enim ad minim veniam</a></h3>
+										<div class="post_meta">			
+											<span class="meta_date">18 Sep, 2018</span>
+										</div>
+									</div>
+									<div class="latest_style_2_item">
+										<figure class="alith_news_img"><a href="single.html"><img src="{% static 'images/thumb-square-3.png' %}" alt=""/></a></figure>
+										<h3 class="alith_post_title"><a href="single.html">Magna aliqua ut enim ad minim veniam</a></h3>
+										<div class="post_meta">			
+											<span class="meta_date">18 Sep, 2018</span>
+										</div>
+									</div>
+								</div>
+							</div> <!--.sidebar-widget-->
+							
+							<div class="sidebar-widget animate-box">					
+								<div class="widget-title-cover"><h4 class="widget-title"><span>Tags cloud</span></h4></div>
+								<div class="alith_tags_all">
+									<a href="category-grid.html#" class="alith_tagg">Business</a>
+									<a href="category-grid.html#" class="alith_tagg">Technology</a>
+									<a href="category-grid.html#" class="alith_tagg">Sport</a>
+									<a href="category-grid.html#" class="alith_tagg">Art</a>
+									<a href="category-grid.html#" class="alith_tagg">Lifestyle</a>
+									<a href="category-grid.html#" class="alith_tagg">Three</a>
+									<a href="category-grid.html#" class="alith_tagg">Photography</a>
+									<a href="category-grid.html#" class="alith_tagg">Lifestyle</a>
+									<a href="category-grid.html#" class="alith_tagg">Art</a>
+									<a href="category-grid.html#" class="alith_tagg">Education</a>
+									<a href="category-grid.html#" class="alith_tagg">Social</a>
+									<a href="category-grid.html#" class="alith_tagg">Three</a>
+								</div>
+							</div> <!--.sidebar-widget-->
+							
+						</aside>
+						<!--End Sidebar-->
+					</div>
+					</div> <!--.primary-->
+				</div>
+			</div>
+			{% include 'pre_footer_column.html' %}
+			{% include 'footer.html' %}
+
+			<div class="gototop js-top">
+				<a href="category-grid.html#" class="js-gotop"><span>Take Me Top</span></a>
+			</div>
+		</div> <!--page-content-wrapper-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+		<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
+		<script src="{% static 'js/jquery.slicknav.min.js' %}"></script>
+		<script src="{% static 'js/masonry.pkgd.min.js' %}"></script>
+		<!-- Main -->
+		<script src="{% static 'js/main.js' %}"></script>
+		<script src="{% static 'js/smart-sticky.js' %}"></script>
+		<script src="{% static 'js/theia-sticky-sidebar.js' %}"></script>
+	</div> <!--#wrapper-->
+</body>
+{% endblock %}

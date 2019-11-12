@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+<body>
+	<div class="spinner-cover">
+		<div class="spinner-inner">
+			<div class="spinner">
+			  <div class="rect1"></div>
+			  <div class="rect2"></div>
+			  <div class="rect3"></div>
+			  <div class="rect4"></div>
+			  <div class="rect5"></div>
+			</div>
+		</div>
+	</div>
+	<div id="wrapper">
+		<div id="page-content-wrapper">
+			{% include 'header.html' %}
+			<div class="container-fluid">
+				<div class="container animate-box">
+					<div class="row">
+						<div class="post-header">
+                           {% if messages %}
+                           <div class="alert alert-success" role="alert">
+                           {% for message in messages %}
+                           <p>{{ message }}</p>
+                           </div>
+                           {% endfor %}
+                           {% endif %}
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="container-fluid">
+				<div class="container">
+					<div class="primary margin-15">
+					<div class="row">
+						<div class="col-md-8">
+							<article class="section_margin">
+								<figure class="alith_news_img animate-box"><a href="single.html"><img src="{{ news.image.url }}" alt=""/></a></figure>
+								<div class="post-content">
+									<div class="single-header">
+										<h3 class="alith_post_title">{{ news.title }}</h3>
+										<div class="post_meta">
+											<span class="meta_author_name"><a href="page-author.html" class="author">{{ author }}</a></span>
+											<span class="meta_categories"><a href="http://demos.alithemes.com/html/hewo/archive.html">Politics</a>, <a href="http://demos.alithemes.com/html/hewo/archive.html">News</a></span>
+											<span class="meta_date">{{ news.article_date }}</span>
+										</div>
+									</div>
+									<div class="single-content animate-box">
+										<div class="dropcap column-2 animate-box">
+										    <p>{{ news.article_text | safe }}</p>
+                                            <p>https://www.pravda.com.ua</p>
+                                            <p>Viewed at source before parsed: {{ news.source_reviews }}</p>
+										</div>
+										<div class="post-tags">
+											<div class="post-tags-inner">
+												{% if post_tags %}
+                                                {% for tag in post_tags %}
+                                                <a rel="tag" href="/">{{ tag }}</a>
+												{% endfor %}
+                                                {% endif %}
+											</div>
+										</div>
+										<div class="post-share">
+											<ul>
+												<li class="facebook"><a href="single.html"><i class="fa fa-facebook"></i></a></li>
+												<li class="twitter"><a href="single.html"><i class="fa fa-twitter"></i></a></li>
+												<li class="google-plus"><a href="single.html"><i class="fa fa-google-plus"></i></a></li>
+												<li class="instagram"><a href="single.html"><i class="fa fa-instagram"></i></a></li>
+											</ul>
+										</div>
+
+									</div> <!--single content-->
+									<div class="single-comment">
+										<section id="comments">
+										   <h4 class="single-comment-title">Comments</h4>
+										   <div class="comments-inner clr">
+											  <div class="comments-title"> <p>There are {{ articlereviews.count }} comments for this article</p></div>
+												<ol class="commentlist">
+												   <li id="li-comment-4">
+													  {% for review in articlereviews %}
+                                                       <article class="comment even thread-even depth-1 clr" id="comment-4">
+														 <div class="comment-details clr ">
+															<header class="comment-meta"> <strong class="fn"> {{ review.name }} </strong> <span class="comment-date">{{ review.published }}</span></header>
+															<div class="comment-content entry clr">
+															   <p>{{ review.comment }}</p>
+															</div>
+														 </div>
+													  </article>
+                                                      {% endfor %}
+												   </li>
+												</ol> <!--comment list-->
+												<nav role="navigation" class="comment-navigation clr">
+												   <div class="nav-previous span_1_of_2 col col-1"></div>
+												   <div class="nav-next span_1_of_2 col"> <a href="single.html#comments">Newer Comments →</a></div>
+												</nav> <!--comment nav-->
+												<div class="comment-respond" id="respond">
+												   <h3 class="comment-reply-title" id="reply-title">Leave a Reply <small><a href="single.html#respond" id="cancel-comment-reply-link" rel="nofollow"><i class="fa fa-times"></i></a></small></h3>
+												   <form novalidate="" class="comment-form" id="commentform" method="post" action="{% url 's_article' object.slug %}">
+													  {% csrf_token %}
+                                                      {{ form }}
+													  <p class="form-submit"><input type="submit" value="Post Comment" class="submit" id="submit" name="submit"> <input type="hidden" id="comment_post_ID" value="80" name="comment_post_ID"> <input type="hidden" value="0" id="comment_parent" name="comment_parent"></p>
+												   </form>
+												</div> <!--comment form-->
+										   </div>
+										</section>
+									</div>
+								</div>
+							</article>
+						</div>
+						<!--Start Sidebar-->
+						<aside class="col-md-4 sidebar_right">
+							<div class="sidebar-widget animate-box">
+								<div class="widget-title-cover"><h4 class="widget-title"><span>Popular Articles</span></h4></div>
+								<div class="latest_style_1">
+									{% for pop_art in popular_news %}
+                                    <div class="latest_style_1_item">
+									  <span class="item-count vertical-align">{{ forloop.counter }}</span>
+										<div class="alith_post_title_small">
+											<a href="{% url 's_article' pop_art.slug %}"><strong>{{ pop_art.title | truncatechars:30 | lower}}</strong></a><p class="meta"><span>{{ pop_art.article_date }}</span> <span>{{ pop_art.source_reviews }}</span></p>
+										</div>
+										<figure class="alith_news_img"><a href="{% url 's_article' pop_art.slug %}"><img src="{{ pop_art.image.url }}" alt=""/></a></figure>
+									</div>
+                                    {% endfor %}
+								</div>
+							</div> <!--.sidebar-widget-->
+
+							<div class="sidebar-widget animate-box">
+								<div class="widget-title-cover"><h4 class="widget-title"><span>Search</span></h4></div>
+								<form action="single.html#" class="search-form" method="get" role="search">
+									<label>
+										<input type="search" name="s" value="" placeholder="Search …" class="search-field">
+									</label>
+										<input type="submit" value="Search" class="search-submit">
+								</form>
+							</div> <!--.sidebar-widget-->
+
+							<div class="sidebar-widget animate-box">
+								<div class="widget-title-cover"><h4 class="widget-title"><span>Trending</span></h4></div>
+								<div class="latest_style_2">
+
+                                    <div class="latest_style_2_item_first">
+										<figure class="alith_post_thumb_big">
+											<span class="post_meta_categories_label">Legal, Blog</span>
+											<a href="single.html"><img src="{% static 'images/thumb-large.jpg' %}" alt=""/></a>
+										</figure>
+										<h3 class="alith_post_title">
+											<a href="single.html"><strong>Nor again is there anyone who loves or pursues or desires to obtain</strong></a>
+										</h3>
+									</div>
+
+                                    <div class="latest_style_2_item">
+										<figure class="alith_news_img"><a href="single.html"><img src="{% static 'images/thumb-square-1.png' %}" alt=""/></a></figure>
+										<h3 class="alith_post_title"><a href="single.html">Magna aliqua ut enim ad minim veniam</a></h3>
+										<div class="post_meta">
+											<span class="meta_date">18 Sep, 2018</span>
+										</div>
+									</div>
+									<div class="latest_style_2_item">
+										<figure class="alith_news_img"><a href="single.html"><img src="{% static 'images/thumb-square-2.png' %}" alt=""/></a></figure>
+										<h3 class="alith_post_title"><a href="single.html">Magna aliqua ut enim ad minim veniam</a></h3>
+										<div class="post_meta">
+											<span class="meta_date">18 Sep, 2018</span>
+										</div>
+									</div>
+									<div class="latest_style_2_item">
+										<figure class="alith_news_img"><a href="single.html"><img src="{% static 'images/thumb-square-3.png' %}" alt=""/></a></figure>
+										<h3 class="alith_post_title"><a href="single.html">Magna aliqua ut enim ad minim veniam</a></h3>
+										<div class="post_meta">
+											<span class="meta_date">18 Sep, 2018</span>
+										</div>
+									</div>
+								</div>
+							</div> <!--.sidebar-widget-->
+
+							<div class="sidebar-widget animate-box">
+								<div class="widget-title-cover"><h4 class="widget-title"><span>Tags cloud</span></h4></div>
+								<div class="alith_tags_all">
+									{% for tag in tags %}
+                                    <a href="/" class="alith_tagg">{{ tag | lower }}</a>
+                                    {% endfor %}
+								</div>
+							</div> <!--.sidebar-widget-->
+
+						</aside>
+						<!--End Sidebar-->
+					</div>
+					</div> <!--.primary-->
+				</div>
+			</div>
+			{% include 'pre_footer_article.html' %}
+			{% include 'footer.html' %}
+			<div class="gototop js-top">
+				<a href="single.html#" class="js-gotop"><span>Take Me Top</span></a>
+			</div>
+		</div> <!--page-content-wrapper-->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		<script src="{% static 'js/owl.carousel.min.js' %}"></script>
+		<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
+		<script src="{% static 'js/jquery.slicknav.min.js' %}"></script>
+		<script src="{% static 'js/masonry.pkgd.min.js' %}"></script>
+		<!-- Main -->
+		<script src="{% static 'js/main.js' %}"></script>
+		<script src="{% static 'js/smart-sticky.js' %}"></script>
+		<script src="{% static 'js/theia-sticky-sidebar.js' %}"></script>
+	</div> <!--#wrapper-->
+</body>
+{% endblock %}

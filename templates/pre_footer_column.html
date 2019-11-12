@@ -1,0 +1,104 @@
+{% load static %}
+            <div class="container-fluid">
+				<div class="container animate-box">
+					<div class="bottom margin-15">
+						<div class="row">
+							<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
+								<div class="sidebar-widget">
+								<div class="widget-title-cover"><h4 class="widget-title"><span>Most comments</span></h4></div>
+								<div class="latest_style_3">
+									{% for comment in most_comments %}
+                                    <div class="latest_style_3_item">
+									  <span class="item-count vertical-align">{{ forloop.counter }}</span>
+										<div class="alith_post_title_small">
+											<a href="{% url 's_column' comment.slug %}"><strong>{{ comment.title }}</strong></a>
+										</div>
+									</div>
+                                    {%endfor %}
+								</div>
+							</div>
+							</div>
+							<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
+								<div class="sidebar-widget">
+									<div class="widget-title-cover"><h4 class="widget-title"><span>Latest</span></h4></div>
+									<div class="latest_style_2">
+										{% for item in latest %}
+                                        <div class="latest_style_2_item">
+											<figure class="alith_news_img"><a href="{% url 's_column' item.slug %}"><img alt="" src="{{ item.image.url }}" class="hover_grey"></a></figure>
+											<h3 class="alith_post_title"><a href="{% url 's_column' item.slug %}">{{ item.title | lower | truncatechars:15 }}</a></h3>
+										</div>
+                                        {% endfor %}
+									</div>
+								</div>
+							</div>
+							<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
+								<div class="sidebar-widget">
+									<div class="widget-title-cover"><h4 class="widget-title"><span>Categories</span></h4></div>
+									<ul class="bottom_menu">
+										<li><a href="single.html#" class=""><i class="fa fa-angle-right"></i>&nbsp;&nbsp; Business</a></li>
+										<li><a href="single.html#" class=""><i class="fa fa-angle-right"></i>&nbsp;&nbsp; Entertainment</a></li>
+										<li><a href="single.html#" class=""><i class="fa fa-angle-right"></i>&nbsp;&nbsp; Environment</a></li>
+										<li><a href="single.html#" class=""><i class="fa fa-angle-right"></i>&nbsp;&nbsp; Health</a></li>
+										<li><a href="single.html#" class=""><i class="fa fa-angle-right"></i>&nbsp;&nbsp; Life style</a></li>
+										<li><a href="single.html#" class=""><i class="fa fa-angle-right"></i>&nbsp;&nbsp; Politics</a></li>
+										<li><a href="single.html#" class=""><i class="fa fa-angle-right"></i>&nbsp;&nbsp; Technology</a></li>
+										<li><a href="single.html#" class=""><i class="fa fa-angle-right"></i>&nbsp;&nbsp; World</a></li>
+									</ul>
+								</div>
+							</div>
+							<div class="col-xs-12 col-sm-6 col-md-6 col-lg-3">
+								<div class="sidebar-widget">
+									<div class="widget-title-cover"><h4 class="widget-title"><span>Instagram</span></h4></div>
+									<ul class="alith-instagram-grid-widget alith-clr alith-row alith-gap-10">
+										<li class="wow fadeInUp alith-col-nr alith-clr alith-col-3 animated">
+											<a class="" target="_blank" href="single.html#">
+												<img class="" title="" alt="" src="{% static 'images/thumb-square-1.png' %}">
+											</a>
+										</li>
+										<li class="wow fadeInUp alith-col-nr alith-clr alith-col-3 animated">
+											<a class="" target="_blank" href="single.html#">
+												<img class="" title="" alt="" src="{% static 'images/thumb-square-2.png' %}">
+											</a>
+										</li>
+										<li class="wow fadeInUp alith-col-nr alith-clr alith-col-3 animated">
+											<a class="" target="_blank" href="single.html#">
+												<img class="" title="" alt="" src="{% static 'images/thumb-square-3.png' %}">
+											</a>
+										</li>
+										<li class="wow fadeInUp alith-col-nr alith-clr alith-col-3 animated">
+											<a class="" target="_blank" href="single.html#">
+												<img class="" title="" alt="" src="{% static 'images/thumb-square-4.png' %}">
+											</a>
+										</li>
+										<li class="wow fadeInUp alith-col-nr alith-clr alith-col-3 animated">
+											<a class="" target="_blank" href="single.html#">
+												<img class="" title="" alt="" src="{% static 'images/thumb-square-5.png' %}">
+											</a>
+										</li>
+										<li class="wow fadeInUp alith-col-nr alith-clr alith-col-3 animated">
+											<a class="" target="_blank" href="single.html#">
+												<img class="" title="" alt="" src="{% static 'images/thumb-square-1.png' %}">
+											</a>
+										</li>
+										<li class="wow fadeInUp alith-col-nr alith-clr alith-col-3 animated">
+											<a class="" target="_blank" href="single.html#">
+												<img class="" title="" alt="" src="{% static 'images/thumb-square-2.png' %}">
+											</a>
+										</li>
+										<li class="wow fadeInUp alith-col-nr alith-clr alith-col-3 animated">
+											<a class="" target="_blank" href="single.html#">
+												<img class="" title="" alt="" src="{% static 'images/thumb-square-3.png' %}">
+											</a>
+										</li>
+										<li class="wow fadeInUp alith-col-nr alith-clr alith-col-3 animated">
+											<a class="" target="_blank" href="single.html#">
+												<img class="" title="" alt="" src="{% static 'images/thumb-square-4.png' %}">
+											</a>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div> <!--.row-->
+					</div>
+				</div>
+			</div>
