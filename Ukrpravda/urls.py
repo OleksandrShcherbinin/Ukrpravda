@@ -12,11 +12,12 @@ urlpatterns = [
     path('article/<slug:slug>', views.DetailArticleView.as_view(), name='s_article'),
     path('columns/', views.ColumnsView.as_view(), name='columns'),
     path('columns/<slug:slug>', views.DetailColumnView.as_view(), name='s_column'),
-    path('', views.SearchView.as_view(), name='search'),
-
+    path('author/<slug:slug>', views.AuthorView.as_view(), name='author'),
+    path('authors/', views.AuthorsView.as_view(), name='authors_list'),
+    path('search', views.SearchView.as_view(), name='search'),
     path('admin/', admin.site.urls),
     path('summernote/', include('django_summernote.urls')),
-    #path('robots.txt', views.robots_view)
+    path('robots.txt', views.robots_view)
 
 ]
 

@@ -1,14 +1,12 @@
 from django.shortcuts import render
 from .models import *
 from django.db.models import Count
-from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView, SingleObjectMixin
 from django.views.generic import FormView
-from django.views.generic.list import ListView, MultipleObjectMixin
-from django.shortcuts import get_object_or_404
-from django.core.paginator import Paginator
+from django.views.generic.list import ListView
 from django.http import Http404
 from django.contrib import messages
+from django.db.models import Q
 from .forms import ReviewForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
@@ -18,91 +16,66 @@ import logging
 #logger = logging.getLogger('django')
 
 
-class IndexView(TemplateView):
+class IndexView(ListView):
     template_name = 'home.html'
-    paginate_by = 10
+    paginate_by = 14
 
-    #def get(self, request, *args, **kwargs):
-    #    self.object = self.get_object(queryset=NewsTag.objects.all())
-    #    return super().get(request, *args, **kwargs)
-
-    #def get_queryset(self):
-    #    #news_tag = self.request.GET.get('news_tag')
-    #    return News.objects.filter(news_tag=self.object.id)
+    def get_queryset(self):
+        return News.objects.all().order_by('-news_date')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         value = datetime.now().date()
-        big_news = Article.objects.all().order_by('-article_date')[0]
-        fresh_news = Columns.objects.all().order_by('-column_date')[1:3]
-        news = News.objects.all().order_by('-news_date')[3:14]
+        big_news = Article.objects.filter(moderated=True).order_by('-article_date')[0]
+        fresh_news = Columns.objects.filter(moderated=True).order_by('-column_date')[1:3]
         context.update({'big_news': big_news})
         context.update({'fresh_news': fresh_news})
-        context.update({'news': news})
         context.update({'value': value})
         context['popular_news'] = News.objects.all().order_by('-source_reviews')[:5]
         context['latest'] = News.objects.all().order_by('-news_date')[:3]
         context['most_comments'] = News.objects.all().order_by('-reviews')[:3]
-        #news_for_tags = News.objects.get(news_tag=self.object)
-        #context.update({'news_for_tags': news_for_tags})
-        #news_tags = NewsTag.objects.filter(news_for_tags=self.object.id)
-        #context['news_tags'] = news_tags
 
         return context
 
 
-class ArticlesView(TemplateView, Paginator):
+class ArticlesView(ListView):
     template_name = 'article.html'
     paginate_by = 10
+
+    def get_queryset(self):
+        return Article.objects.filter(moderated=True).order_by('-article_date')[3:]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         value = datetime.now().date()
-        big_news = Article.objects.all().order_by('-article_date')[0]
-        fresh_news = Article.objects.all().order_by('-article_date')[1:3]
-        news = Article.objects.all().order_by('-article_date')[3:14]
+        big_news = Article.objects.filter(moderated=True).order_by('-article_date')[0]
+        fresh_news = Article.objects.filter(moderated=True).order_by('-article_date')[1:3]
         context.update({'big_news': big_news})
         context.update({'fresh_news': fresh_news})
-        context.update({'news': news})
         context.update({'value': value})
-        context['popular_news'] = Article.objects.all().order_by('-source_reviews')[:5]
-        context['latest'] = Article.objects.all().order_by('-article_date')[:3]
-        context['most_comments'] = Article.objects.all().order_by('-articlereviews')[:3]
+        context['popular_news'] = Article.objects.filter(moderated=True).order_by('-source_reviews')[:5]
+        context['latest'] = Article.objects.filter(moderated=True).order_by('-article_date')[:3]
+        context['most_comments'] = Article.objects.filter(moderated=True).order_by('-articlereviews')[:3]
 
         return context
 
 
-class ColumnsView(TemplateView, Paginator):
+class ColumnsView(ListView):
     template_name = 'columns.html'
-    paginate_by = 10
-
+    paginate_by = 8
     model = Columns
-    #slug_field = 'columns'
 
-    #def get(self, request, *args, **kwargs):
-    #    self.object = self.get_object(queryset=Author.objects.all())
-    #    return super().get(request, *args, **kwargs)
-
-    #def get_queryset(self):
-    #    #self.author_tag = get_object_or_404(Author, columns=self.author_tag)
-    #    return Columns.objects.filter(author_tag=self.object)
+    def get_queryset(self):
+        columns = Columns.objects.filter(moderated=True).order_by('-column_date').prefetch_related('author_tag')
+        return columns
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         value = datetime.now().date()
-        #big_news = Columns.objects.all().order_by('-column_date')[0]
-        #fresh_news = Columns.objects.all().order_by('-column_date')[1:3]
-        news = Columns.objects.all().order_by('-column_date')[0:14]
-        #author = Author.objects.filter(columns=self.author_tag)
-        #context['author'] = author
-        #context.update({'author': author})
-        #context.update({'big_news': big_news})
-        #context.update({'fresh_news': fresh_news})
-        context.update({'news': news})
-        context.update({'value': value})
-        context['popular_news'] = Columns.objects.all().order_by('-source_reviews')[:5]
-        context['latest'] = Columns.objects.all().order_by('-column_date')[:3]
-        context['most_comments'] = Columns.objects.all().order_by('-columnreviews')[:3]
+        context['value'] = value
+        context['popular_news'] = Columns.objects.filter(moderated=True).order_by('-source_reviews')[:5]
+        context['latest'] = Columns.objects.filter(moderated=True).order_by('-column_date')[:3]
+        context['most_comments'] = Columns.objects.filter(moderated=True).order_by('-columnreviews')[:3]
 
         return context
 
@@ -228,15 +201,60 @@ class DetailColumnView(DetailView, FormView, SingleObjectMixin):
         return self.render_to_response(context)
 
 
-class SearchView(ListView):
-    template_name = 'home.html'
-    model = News
+class AuthorView(ListView, SingleObjectMixin):
+    template_name = 'page-author.html'
+    model = Author
     paginate_by = 10
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object(queryset=Author.objects.all())
+        return super().get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        article = Article.objects.filter(author_tag=self.object, moderated=True).order_by('-article_date')
+        if article:
+            return article
+        else:
+            return Columns.objects.filter(author_tag=self.object, moderated=True).order_by('-column_date')
+
+
+class AuthorsView(ListView):
+    template_name = 'authors.html'
+    model = Author
+    paginate_by = 10
+
+    def get_queryset(self):
+        return Author.objects.all()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        value = datetime.now().date()
+        context.update({'value': value})
+        context['popular_news'] = News.objects.all().order_by('-source_reviews')[:5]
+        context['latest'] = News.objects.all().order_by('-news_date')[:3]
+        context['most_comments'] = News.objects.all().order_by('-reviews')[:3]
+
+        return context
+
+
+class SearchView(ListView):
+    template_name = 'page-search.html'
+    model = News
+    paginate_by = 14
 
     def get_queryset(self):
         query = self.request.GET.get('q')
         if query:
-            return News.objects.filter(title__contains=query)
+            return News.objects.filter(title__contains=query).order_by('-news_date')
         else:
             return Http404()
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        value = datetime.now().date()
+        context['value'] = value
+        return context
+
+
+def robots_view(request):
+    return render(request, 'robots.txt', {}, content_type="text/plain")

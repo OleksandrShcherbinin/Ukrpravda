@@ -32,7 +32,7 @@
 						<div class="col-md-8">
 							<div class="post_list grid-blance">
 								<div class="row">
-									{% for article in news %}
+									{% for article in columns_list %}
                                     <article class="col-md-6 animate-box section_margin">
 										<div class="wrap">
 											<figure class="alith_news_img">
@@ -42,9 +42,8 @@
 										</div>
 										<h3 class="alith_post_title"><a href="{% url 's_column' article.slug %}">{{ article.title }}</a></h3>
 										<div class="post_meta">
-
-											<span class="meta_author_name"><a href="page-author.html" class="author">{{ article.author_tag }}</a></span>
-											<span class="meta_date">{{ article.column_date }}</span>
+                                            <span class="meta_author_name"><a href="{% url 'author' article.author_tag.all.0.slug %}" class="author">{{ article.author_tag.all.0.name }}</a></span>
+                                            <span class="meta_date">{{ article.column_date }}</span>
 										</div>
 										<p class="alith_post_except">{{ article.column_text | safe | truncatewords_html:20 }}</p>
 										<div class="line-space"></div>
@@ -148,15 +147,7 @@
 				<a href="category-grid.html#" class="js-gotop"><span>Take Me Top</span></a>
 			</div>
 		</div> <!--page-content-wrapper-->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-		<script src="{% static 'js/owl.carousel.min.js' %}"></script>
-		<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
-		<script src="{% static 'js/jquery.slicknav.min.js' %}"></script>
-		<script src="{% static 'js/masonry.pkgd.min.js' %}"></script>
-		<!-- Main -->
-		<script src="{% static 'js/main.js' %}"></script>
-		<script src="{% static 'js/smart-sticky.js' %}"></script>
-		<script src="{% static 'js/theia-sticky-sidebar.js' %}"></script>
+		{% include 'footer_scripts.html' %}
 	</div> <!--#wrapper-->
 </body>
 {% endblock %}

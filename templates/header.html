@@ -1,3 +1,5 @@
+            {% load cache %}
+
             {% load static %}
             <div class="container-fluid">
 				<div class="container">
@@ -22,7 +24,7 @@
 											<span class="screen-reader-text">Search for:</span>
 											<input type="text" name="q" value="" placeholder="Search …" class="search-field">
 										</label>
-										<input type="submit" value="Search" class="search-submit">
+										<input type="submit" id="search" class="search-submit">
 									</form>
 								</div>
 							</div>
@@ -47,7 +49,7 @@
 						<div class="row">
 							<div class="col-12 col-md-12 main_nav_cover" id="nav">
 								<ul id="main-menu">
-									<li class="menu-item-has-children"><a href="home-grid.html#">Home</a>
+									<li class="menu-item-has-children"><a href="/">Home</a>
 										<ul class="sub-menu">
 											<li><a href="/">Default</a></li>
 											<li><a href="home-grid.html">Grid</a></li>
@@ -61,10 +63,10 @@
 										<ul class="sub-menu">
 											<li class="menu-item-has-children"><a href="home-grid.html#">Category</a>
 												<ul class="sub-menu">
-													<li><a href="category-list.html">List</a></li>
-													<li><a href="category-grid.html">Grid</a></li>
-													<li><a href="category-masonry.html">Masonry</a></li>
-													<li><a href="category-big.html">Big </a></li>
+													<li><a href="/">List</a></li>
+													<li><a href="/">Grid</a></li>
+													<li><a href="/">Masonry</a></li>
+													<li><a href="/">Big </a></li>
 												</ul>
 											</li>
 											<li class="menu-item-has-children"><a href="home-grid.html#">Posts</a>
@@ -89,8 +91,8 @@
 									</li>
 									<li><a href="/">All News</a></li>
 									<li><a href="{% url 'article' %}">Articles</a></li>
-                                    <li> <a href="{% url 'columns' %}">Columns</a></li>
-									<li><a href="category-list.html">Jobs</a></li>
+                                    <li><a href="{% url 'columns' %}">Columns</a></li>
+									<li><a href="{% url 'authors_list' %}">Our Authors</a></li>
 								</ul>
 							</div>
 						</div>

@@ -19,7 +19,7 @@ class Task(models.Model):
 
     task = models.CharField(max_length=255, choices=CHOICES)
     status = models.CharField(max_length=255, null=True, blank=True)
-    #arg = models.CharField(max_length=255, null=True, blank=True)
+    arg = models.CharField(max_length=255, null=True, blank=True)
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(null=True, blank=True)
 

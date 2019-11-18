@@ -37,13 +37,13 @@
 					<div class="row">
 						<div class="col-md-8">
 							<article class="section_margin">
-								<figure class="alith_news_img animate-box"><a href="single.html"><img src="{{ news.image.url }}" alt=""/></a></figure>
+								<figure class="alith_news_img animate-box"><img src="{{ news.image.url }}" alt=""/></figure>
 								<div class="post-content">
 									<div class="single-header">
 										<h3 class="alith_post_title">{{ news.title }}</h3>
 										<div class="post_meta">
-											<a href="page-author.html" class="meta_author_avatar"><img src="{{ news.image.url }}" alt="author details"/></a>
-											<span class="meta_author_name"><a href="page-author.html" class="author">{{ author }}</a></span>
+											<a class="meta_author_avatar"><img src="{{ news.image.url }}" alt="author details"/></a>
+											<span class="meta_author_name"><a href="{% url 'author' author.slug %}" class="author">{{ author }}</a></span>
 											<span class="meta_categories"><a href="http://demos.alithemes.com/html/hewo/archive.html">Politics</a>, <a href="http://demos.alithemes.com/html/hewo/archive.html">News</a></span>
 											<span class="meta_date">{{ news.column_date }}</span>
 										</div>
@@ -196,15 +196,7 @@
 				<a href="single.html#" class="js-gotop"><span>Take Me Top</span></a>
 			</div>
 		</div> <!--page-content-wrapper-->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-		<script src="{% static 'js/owl.carousel.min.js' %}"></script>
-		<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
-		<script src="{% static 'js/jquery.slicknav.min.js' %}"></script>
-		<script src="{% static 'js/masonry.pkgd.min.js' %}"></script>
-		<!-- Main -->
-		<script src="{% static 'js/main.js' %}"></script>
-		<script src="{% static 'js/smart-sticky.js' %}"></script>
-		<script src="{% static 'js/theia-sticky-sidebar.js' %}"></script>
+		{% include 'footer_scripts.html' %}
 	</div> <!--#wrapper-->
 </body>
 {% endblock %}

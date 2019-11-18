@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+<body>
+	<div class="spinner-cover">
+		<div class="spinner-inner">
+			<div class="spinner">
+			  <div class="rect1"></div>
+			  <div class="rect2"></div>
+			  <div class="rect3"></div>
+			  <div class="rect4"></div>
+			  <div class="rect5"></div>
+			</div>
+		</div>
+	</div>
+	<div id="wrapper">
+		<div id="page-content-wrapper">
+			{% include 'header.html' %}
+			<div class="container-fluid">
+				<div class="container">
+					<div class="primary margin-15">
+					<div class="row">
+						<div class="col-md-8">
+							<div class="post_list post_list_style_1">
+								<div class="alith_heading">
+									<h2 class="alith_heading_patern_2">OUR AUTHORS</h2>
+								</div>
+                                {% for author in object_list %}
+                                <article class="row section_margin animate-box">
+									<div class="col-md-9 animate-box">
+										<h3 class="alith_post_title"><a href="{% url 'author' author.slug %}">{{ author.name | upper }}{{ author.author_tag__columns.count }}</a></h3>
+									</div>
+								</article>
+								{% endfor %}
+							</div>
+							{% include 'paginator.html' %}
+							</div>
+						</div>
+						<!--End Sidebar-->
+					</div>
+					</div> <!--.primary-->
+
+				</div>
+			</div>
+            {% include 'pre_footer.html' %}
+			</div>
+			{% include 'footer.html' %}
+			<div class="gototop js-top">
+				<a href="home-grid.html#" class="js-gotop"><span>Take Me Top</span></a>
+			</div>
+        <div> <!--page-content-wrapper-->
+		{% include 'footer_scripts.html' %}
+	</div> <!--#wrapper-->
+</body>
+{% endblock %}

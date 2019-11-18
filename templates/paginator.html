@@ -1,16 +1,22 @@
-                            {% load static %}
-
-                            <div class="site-pagination animate-box">
-								<ul class="page-numbers">
-
-                                    <li><a href="/" class="prev page-numbers">PREV</a></li>
-
-                                    <li><span class="/" aria-current="page">1.</span></li>
-									<li><a href="/" class="page-numbers">2.</a></li>
-									<li><a href="/" class="page-numbers">3.</a></li>
-									<li><a href="/" class="page-numbers">4.</a></li>
-
-                                    <li><a href="/" class="next page-numbers">NEXT</a></li>
-
-								</ul>
+                          {% load static %}
+                          {% if is_paginated %}
+                          <div class="site-pagination animate-box" xmlns="http://www.w3.org/1999/html">
+							 <ul class="page-numbers">
+                                  {% if page_object.has_previous %}
+                                      <li><a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q}}{{% endif %}"></a><i class="prev page-numbers"></i>PREV</li>
+                                  {% endif %}
+                                      {% for i in paginator.page_range %}
+                                          {% if forloop.counter|add:5 > page_obj.number and forloop.counter < page_obj.number|add:5 %}
+                                              {% if page_obj.number == i %}
+                                                  <li><span class="page-numbers current" aria-current="page">{{ i }}.</span></li>
+                                              {% else %}
+									              <li><a href="?page={{i}}{% if request.GET.q %}&q={{ request.GET.q}}{% endif %}" class="page-numbers">{{ i }}.</a></li>
+                                              {% endif %}
+                                          {% endif %}
+                                      {% endfor %}
+                                  {% if paginator.has_next %}
+                                      <li><a href="?page={{page_object.next_page_number}}{% if request.GET.q %}&q={{ request.GET.q}}{% endif %}"></a><i class="next page-numbers"></i>NEXT</li>
+                                  {% endif %}
+						       </ul>
 							</div>
+                          {% endif %}

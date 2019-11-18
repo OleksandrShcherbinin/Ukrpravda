@@ -1,22 +1,27 @@
 from django.db.models.signals import post_save
 from News.models import News, NewsTag, Columns, Author, Article
+from django.conf import settings
 from task.models import Task
-from News.management.commands.scraper import run_news_scraper2
+from News.management.commands.scraper import run_news_scraper, get_news_links, \
+    run_articles_scraper, run_columns_scraper
 from threading import Thread
 import os
-from django.conf import settings
 
 
 def handler_run_parser(sender, instance, **kwargs):
     if kwargs.get('created'):
         if instance.task == 'run_parser':
-            try:
-                start, end = instance.arg.split(',')
-                start, end = int(start), int(end)
-            except Exception as e:
-                print(e, type(e))
-                start, end = 0, 1
-            Thread(target=run_news_scraper2, args=(start, end, instance)).start()
+            Thread(target=run_columns_scraper, args=(1, instance)).start()
+            Thread(target=run_articles_scraper, args=(1, instance)).start()
+            Thread(target=run_news_scraper, args=(1, instance)).start()
+        elif instance.task == 'get_articles':
+            Thread(target=run_articles_scraper, args=(1, instance)).start()
+        elif instance.task == 'get_fresh_links':
+            Thread(target=get_news_links, args=(1, instance)).start()
+        elif instance.task == 'get_columns':
+            Thread(target=run_columns_scraper, args=(1, instance)).start()
+        elif instance.task == 'get_news':
+            Thread(target=run_news_scraper, args=(1, instance)).start()
         elif instance.task == 'count_images':
             count_images = len(os.listdir(os.path.join(settings.BASE_DIR, 'media/images/')))
             instance.status = f'Images = {count_images}'

@@ -63,7 +63,8 @@
 								<div class="alith_heading">
 									<h2 class="alith_heading_patern_2">FRESH NEWS FROM UKRAINE</h2>
 								</div>
-								{% for article in news %}
+								{% if query %}
+                                {% for article in query %}
                                 <article class="row section_margin animate-box">
 									<div class="col-md-9 animate-box">
 										<h3 class="alith_post_title"><a href="{% url 'single' article.slug %}">{{ article.title }}</a></h3>
@@ -73,6 +74,18 @@
 									</div>
 								</article>
 								{% endfor %}
+                                {% else %}
+                                {% for article in news_list %}
+                                <article class="row section_margin animate-box">
+									<div class="col-md-9 animate-box">
+										<h3 class="alith_post_title"><a href="{% url 'single' article.slug %}">{{ article.title }}</a></h3>
+										<div class="post_meta">
+											<span class="meta_date">{{ article.news_date }}</span>
+										</div>
+									</div>
+								</article>
+								{% endfor %}
+                                {% endif %}
 							</div>
 							{% include 'paginator.html' %}
 							</div>
@@ -90,15 +103,7 @@
 				<a href="home-grid.html#" class="js-gotop"><span>Take Me Top</span></a>
 			</div>
         <div> <!--page-content-wrapper-->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-		<script src="{% static 'js/owl.carousel.min.js' %}"></script>
-		<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
-		<script src="{% static 'js/jquery.slicknav.min.js' %}"></script>
-		<script src="{% static 'js/masonry.pkgd.min.js' %}"></script>
-		<!-- Main -->
-		<script src="{% static 'js/main.js' %}"></script>
-		<script src="{% static 'js/smart-sticky.js' %}"></script>
-		<script src="{% static 'js/theia-sticky-sidebar.js' %}"></script>
+		{% include 'footer_scripts.html' %}
 	</div> <!--#wrapper-->
 </body>
 {% endblock %}

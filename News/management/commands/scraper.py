@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from concurrent.futures import ThreadPoolExecutor
 from requests_html import HTMLSession
 from googletrans import Translator
-from datetime import datetime, timezone
+from datetime import datetime
 from threading import Lock
 from time import sleep
 from News.models import *
@@ -27,7 +27,7 @@ ARTICLES_COUNTER = 0
 COLUMNS_COUNTER = 0
 
 
-def news_scraper2(qu):
+def news_scraper(qu):
     while True:
         url = qu.get()
         prox = random.choice(proxies_list)
@@ -42,16 +42,13 @@ def news_scraper2(qu):
                 title = title.split(">")[-1]
                 news_text1 = response.text.index('<div class="post_news__text"')
                 news_text2 = response.text.index('</div> <div class="post__source">')
-                news_text = response.text[news_text1 + 101: news_text2]
-                news_text = ''.join([f"<p>{p}</p>" for p in news_text.split("\n") if p])
-
+                news_text = response.text[news_text1: news_text2]
+                news_text = news_text.split(">", maxsplit=1)
+                news_text = ''.join([f"<p>{p}</p>" for p in news_text[1].split("\n") if p])
                 slug = url.split('news')[-1]
-
                 slug = slug[1:-1].replace('/', '-')
-
                 try:
                     image_url = response.html.xpath('//div[@class="post_news__photo clearfix"]/img/@src')
-
                     with HTMLSession() as session2:
                         resp_img = session2.get(image_url[0])
                         image_name = 'images/' + image_url[0].split("/")[-1]
@@ -59,8 +56,7 @@ def news_scraper2(qu):
                         picture.write(resp_img.content)
                     del resp_img
                 except Exception as e:
-                    print(e, type(e))
-                    #print(e, type(e), sys.exc_info()[-1].tb_lineno)
+                    print(e, type(e), sys.exc_info()[-1].tb_lineno)
                     image_name = 'images/default.jpg'
                     image_url = ['default.jpg']
 
@@ -119,14 +115,15 @@ def news_scraper2(qu):
                     item.news_tag.add(tag)
                     # logger.debug(item)
         except Exception as e:
-            #print(e, type(e))
+            print(url)
+            print(type(e))
             qu.put(url)
 
         if qu.empty():
             break
 
 
-def columns_scraper2(qu):
+def columns_scraper(qu):
     while True:
         url = qu.get()
         translator = Translator()
@@ -140,24 +137,19 @@ def columns_scraper2(qu):
                 h1_start, h1_end = response.text.index('<h1 class="post_news__title'), response.text.index('</h1>')
                 title = response.text[h1_start: h1_end]
                 title = title.split(">")[-1]
-                print(title)
                 news_text1 = response.text.index('<div class="post_news__text"')
                 news_text2 = response.text.index('<div class="post__tags">')
-                news_text = response.text[news_text1 + 104: news_text2]
-                news_text = ''.join([f"<p>{p}</p>" for p in news_text.split("\n") if p])
-                print(news_text)
-                breakpoint()
+                news_text = response.text[news_text1: news_text2]
+                news_text = news_text.split(">", maxsplit=1)
+                news_text = ''.join([f"<p>{p}</p>" for p in news_text[1].split("\n") if p])
                 slug = url.split('columns')[-1]
                 slug = f"column-{slug[1:-1].replace('/', '-')}"
                 author_index1 = response.text.index('<div class="post_news__author"')
-                author_index2 = response.text.index('</a><span class="post_news__author__link"')
-                author = response.text[author_index1+31: author_index2]
-                author = author.split(">")[-1]
+                author = response.text[author_index1+31: author_index1+200].split("<")
+                author = author[1].split(">")[-1]
                 author = translator.translate(author, dest='en')
                 sleep(1)
                 author = author.text
-                print(author)
-                breakpoint()
                 try:
                     image_url = response.html.xpath('//div[@class="post_news__column-author"]/img/@src')
                     with HTMLSession() as session2:
@@ -167,13 +159,12 @@ def columns_scraper2(qu):
                         picture.write(resp_img.content)
                     del resp_img
                 except Exception as e:
-                    print(e, type(e))
-                    # print(e, type(e), sys.exc_info()[-1].tb_lineno)
+                    print(e, sys.exc_info()[-1].tb_lineno)
                     image_name = 'images/default.jpg'
                     image_url = ['default.jpg']
                 post_date_index = response.text.index('<div class="post_news__date"')
-                post_date_index2 = response.text.index('<div class="post__social-container">')
-                post_date = response.text[post_date_index + 29: post_date_index2 - 7]
+                post_date = response.text[post_date_index + 29: post_date_index + 70]
+                post_date = post_date.split("</div>")[0]
                 days = {'Понеділок': 'Monday', 'Вівторок': 'Tuesday', 'Середа': 'Wednesday', 'Четвер': 'Thursday',
                         "П'ятниця": 'Friday', 'Субота': 'Saturday', 'Неділя': 'Sunday'}
                 for day, d_tarns in days.items():
@@ -188,8 +179,6 @@ def columns_scraper2(qu):
                 reviews = response.html.xpath('//div[@class="post__views"]')
                 reviews = [elem.text for elem in reviews]
                 reviews = str(reviews[0]).split(' ')[0]
-                print(reviews)
-                breakpoint()
                 try:
                     tags = response.html.xpath('//span[@class="post__tags__item"]/a/@href')
                 except Exception as e:
@@ -217,11 +206,9 @@ def columns_scraper2(qu):
                         global COUNTER
                         COUNTER += 1
                         print(f'[Item number {COUNTER} saved]', columns["title"], columns['column_date'])
-
                     except Exception as e:
                         print('Не удалось записать', type(e), e)
                         return
-
                 for t in new_tags:
                     tag = {'name': t, 'slug': t}
                     tag, created = NewsTag.objects.get_or_create(**tag)
@@ -231,14 +218,15 @@ def columns_scraper2(qu):
                 authors, created = Author.objects.get_or_create(**authors)
                 item.author_tag.add(authors)
         except Exception as e:
-            print(e)
+            print(url)
+            print(type(e))
             qu.put(url)
 
         if qu.empty():
             break
 
 
-def articles_scraper2(qu):
+def articles_scraper(qu):
     while True:
         url = qu.get()
         translator = Translator()
@@ -254,8 +242,9 @@ def articles_scraper2(qu):
                 title = title.split(">")[-1]
                 news_text1 = response.text.index('<div class="post_news__text"')
                 news_text2 = response.text.index('<div class="post__tags">')
-                news_text = response.text[news_text1 + 105: news_text2]
-                news_text = ''.join([f"<p>{p}</p>" for p in news_text.split("\n") if p])
+                news_text = response.text[news_text1: news_text2]
+                news_text = news_text.split(">", maxsplit=1)
+                news_text = ''.join([f"<p>{p}</p>" for p in news_text[1].split("\n") if p])
                 slug = url.split('articles')[-1]
                 slug = f"article-{slug[1:-1].replace('/', '-')}"
                 author_index1 = response.text.index('<div class="post_news__author"')
@@ -276,14 +265,12 @@ def articles_scraper2(qu):
                             picture.write(resp_img.content)
                         del resp_img
                 except Exception as e:
-                    print(e, type(e))
-                    # print(e, type(e), sys.exc_info()[-1].tb_lineno)
+                    print(e, sys.exc_info()[-1].tb_lineno)
                     image_url = ['http://default.jpg']
                     image_name = 'images/default.jpg'
                 post_date_index = response.text.index('<div class="post_news__date"')
-                post_date_index2 = response.text.index('<div class="post__social-container">')
-                post_date = response.text[post_date_index + 29: post_date_index2 - 14]
-
+                post_date = response.text[post_date_index + 29: post_date_index + 70]
+                post_date = post_date.split("</div>")[0]
                 days = {'Понеділок': 'Monday', 'Вівторок': 'Tuesday', 'Середа': 'Wednesday', 'Четвер': 'Thursday',
                         "П'ятниця": 'Friday', 'Субота': 'Saturday', 'Неділя': 'Sunday'}
                 for day, d_tarns in days.items():
@@ -297,8 +284,6 @@ def articles_scraper2(qu):
                 reviews = response.html.xpath('//div[@class="post__views"]')
                 reviews = [elem.text for elem in reviews]
                 reviews = str(reviews[0]).split(' ')[0]
-                print(reviews)
-
                 try:
                     tags = response.html.xpath('//span[@class="post__tags__item"]/a/@href')
                 except Exception as e:
@@ -307,8 +292,6 @@ def articles_scraper2(qu):
                 for tag in tags:
                     new_tag = tag.replace("/tags/", '').replace("/", '')
                     new_tags.append(new_tag.upper())
-                print(new_tags)
-
                 articles = {
                     'title': title,
                     'slug': slug,
@@ -335,19 +318,21 @@ def articles_scraper2(qu):
                     tag, created = NewsTag.objects.get_or_create(**tag)
                     item.news_tag.add(tag)
                 author_slug = '-'.join(author.split(" "))
-                print(author_slug)
                 authors = {'name': author, 'slug': author_slug}
                 authors, created = Author.objects.get_or_create(**authors)
                 item.author_tag.add(authors)
-
         except Exception as e:
-            print(e)
+            print(url)
+            print(type(e))
             qu.put(url)
         if qu.empty():
             break
 
 
-def get_news_links2():
+def get_news_links(start, task):
+    if task:
+        task.status = 'Started Getting Links'
+        task.save()
 
     for _ in range(10):
         with HTMLSession() as primary_session:
@@ -355,6 +340,9 @@ def get_news_links2():
             proxies = {'http': prox, 'https': prox}
             user_agent = str(random.choice(user_agents)).strip("\t\t\t\t")
             headers = {'User-Agent': user_agent}
+            #print(headers)
+            #breakpoint()
+            #headers = {'User-Agent': 'Googlebot-News'}
             try:
                 prime_response = primary_session.get("https://www.pravda.com.ua/sitemap/sitemap-news.xml",
                                                      proxies=proxies, headers=headers, timeout=10)
@@ -362,34 +350,34 @@ def get_news_links2():
                 urls = prime_response.html.xpath('//@href')
                 if current_month in urls[30]:
                     urls = set(urls)
+                    num_links = len(urls)
                     with open(f'News/management/commands/fresh_news_links.txt', 'w') as sitemap:
                         sitemap.write('\n'.join(urls))
                     break
                 urls = prime_response.html.xpath('//url/loc/text()')
                 if current_month in urls[30]:
-                    urls = prime_response.html.xpath('//url/loc/text()')
                     urls = set(urls)
+                    num_links = len(urls)
                     with open(f'News/management/commands/fresh_news_links.txt', 'w') as sitemap:
                         sitemap.write('\n'.join(urls))
                     break
-
             except Exception as e:
-                print(e, type(e))
+                print(e)
+    if task:
+        task.status = f'COLLECTED {num_links} TO TEXT FILE FOR BACK UP!'
+        task.end_time = datetime.now()
+        task.save()
+    print('Fresh Links Collected!')
 
-    run_news_scraper2()
 
-
-def run_news_scraper2():
+def run_news_scraper(start, task):
+    if task:
+        task.status = 'Started Getting News'
+        task.save()
     workers_count = 30
     news_queue = Queue()
 
     with open(os.path.join('News/management/commands/fresh_news_links.txt'), 'r') as file:
-        #start = start if start <= count else 0
-        #end = end if end <= count else count
-        #try:
-        #    urls = file.readlines()[start:end]
-        #except Exception as e:
-        #    print(e, type(e))
         for url in file:
             if "/rus/" in url:
                 continue
@@ -401,11 +389,18 @@ def run_news_scraper2():
     print('TOTAL NEWS TO PARSE', NEWS_COUNTER)
     with ThreadPoolExecutor(max_workers=workers_count) as executor:
         for _ in range(workers_count):
-            executor.submit(news_scraper2, news_queue)
+            executor.submit(news_scraper, news_queue)
+    if task:
+        global COUNTER
+        task.status = f'THERE ARE {COUNTER} NEWS COLLECTED!'
+        task.end_time = datetime.now()
+        task.save()
 
 
-def run_columns_scraper():
-    #workers_count = 30
+def run_columns_scraper(start, task):
+    if task:
+        task.status = 'Started Getting Columns'
+        task.save()
     columns_queue = Queue()
     with open(os.path.join('News/management/commands/fresh_news_links.txt'), 'r') as file:
         for url in file:
@@ -416,14 +411,22 @@ def run_columns_scraper():
                 url = url.strip("\n")
                 columns_queue.put(url)
                 COLUMNS_COUNTER += 1
+                print(url)
     print('TOTAL COLUMNS TO PARSE', COLUMNS_COUNTER)
-    with ThreadPoolExecutor(max_workers=1) as executor:
-        for _ in range(1):
-            executor.submit(columns_scraper2, columns_queue)
+    with ThreadPoolExecutor(max_workers=COLUMNS_COUNTER) as executor:
+        for _ in range(COLUMNS_COUNTER):
+            executor.submit(columns_scraper, columns_queue)
+    if task:
+        task.status = 'COLUMNS COLLECTED!'
+        task.end_time = datetime.now()
+        task.save()
+    print('COLUMNS COLLECTED!')
 
 
-def run_articles_scraper():
-    #workers_count = 1
+def run_articles_scraper(start, task):
+    if task:
+        task.status = 'Started Getting Articles'
+        task.save()
     articles_queue = Queue()
     with open(os.path.join('News/management/commands/fresh_news_links.txt'), 'r') as file:
         for url in file:
@@ -438,17 +441,32 @@ def run_articles_scraper():
     print('TOTAL ARTICLES TO PARSE', ARTICLES_COUNTER)
     with ThreadPoolExecutor(max_workers=ARTICLES_COUNTER) as executor:
         for _ in range(ARTICLES_COUNTER):
-            executor.submit(articles_scraper2, articles_queue)
+            executor.submit(articles_scraper, articles_queue)
+    if task:
+        task.status = 'ARTICLES COLLECTED!'
+        task.end_time = datetime.now()
+        task.save()
+    print('ARTICLES COLLECTED!')
 
 
 class Command(BaseCommand):
     help = 'Running news scraper to database'
 
     def handle(self, *args, **options):
-        #from task.models import Task
+        from task.models import Task
         #task = Task.objects.create(name='run_parser')
-        get_news_links2()
-        #run_news_scraper2()
-        #run_columns_scraper()
-        #run_articles_scraper()
+        task1 = Task.objects.create(name='get_fresh_links')
+        task2 = Task.objects.create(name='get_articles')
+        task3 = Task.objects.create(name='get_columns')
+        task4 = Task.objects.create(name='get_news')
+        get_news_links(1, task1)
+        run_articles_scraper(1, task2)
+        run_columns_scraper(1, task3)
+        run_news_scraper(1, task4)
+        #if task:
+        #    task.status = 'Started Collecting Full Data'
+        #    task.save()
+        #    task.status = 'DATA COLLECTED!'
+        #    task.end_time = datetime.now()
+        #    task.save()
         print('Done')

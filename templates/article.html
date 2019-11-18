@@ -63,7 +63,7 @@
 								<div class="alith_heading">
 									<h2 class="alith_heading_patern_2">FRESH NEWS FROM UKRAINE</h2>
 								</div>
-								{% for article in news %}
+								{% for article in object_list %}
                                 <article class="row section_margin animate-box">
 									<div class="col-md-3 animate-box">
 										<figure class="alith_news_img"><a href="{% url 's_article' article.slug %}"><img src="{{ article.image.url }}" alt=""/></a></figure>
@@ -94,15 +94,7 @@
 				<a href="home-grid.html#" class="js-gotop"><span>Take Me Top</span></a>
 			</div>
 	    <div> <!--page-content-wrapper-->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-		<script src="{% static 'js/owl.carousel.min.js' %}"></script>
-		<script src="{% static 'js/jquery.waypoints.min.js' %}"></script>
-		<script src="{% static 'js/jquery.slicknav.min.js' %}"></script>
-		<script src="{% static 'js/masonry.pkgd.min.js' %}"></script>
-		<!-- Main -->
-		<script src="{% static 'js/main.js' %}"></script>
-		<script src="{% static 'js/smart-sticky.js' %}"></script>
-		<script src="{% static 'js/theia-sticky-sidebar.js' %}"></script>
+		{% include 'footer_scripts.html' %}
 	</div> <!--#wrapper-->
 </body>
 {% endblock %}
