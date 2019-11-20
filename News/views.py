@@ -245,7 +245,7 @@ class SearchView(ListView):
     def get_queryset(self):
         query = self.request.GET.get('q')
         if query:
-            return News.objects.filter(title__contains=query).order_by('-news_date')
+            return News.objects.filter(title__icontains=query).order_by('-news_date')
         else:
             return Http404()
 
