@@ -19,10 +19,12 @@
 			<div class="container-fluid">
 				<div class="container animate-box">
 					<div class="row">
-						<div class="archive-header">
-							<div class="archive-title"><h2>Search Results for: <em>{{ object }}</em></h2></div>
+						{% if query %}
+                        <div class="archive-header">
+							<div class="archive-title"><h2>Search Results for: <em>{{ query }}</em></h2></div>
 							<div class="bread">We found {{ news_list.count }} articles for you</div>
 						</div>
+                        {% endif %}
 					</div>
 				</div>
 			</div>
@@ -32,7 +34,8 @@
 					<div class="row">
 						<div class="col-md-8">
 							<div class="post_list post_list_style_1">
-								{% for search in news_list %}
+								{% if query %}
+                                {% for search in news_list %}
                                 <article class="row section_margin animate-box">
 									<div class="col-md-4 animate-box">							
 										<figure class="alith_news_img"><a href="{% url 'single' search.slug %}"><img src="{{ search.image.url }}" alt=""/></a></figure>
@@ -48,6 +51,7 @@
 									</div>
 								</article>
                                 {% endfor %}
+                                {% endif %}
 							{% include 'paginator.html' %}
 							</div>
 						</div>

@@ -1,4 +1,58 @@
-
+/***
+Theme Name:		HeWo
+Theme URI:		http://demos.alithemes.com/html/hewo
+Description:	Modern Newspaper HTML Template
+Author:			alithemes.com
+Author URI:		http://alithemes.com
+Version:		1.1
+License:		GNU General Public License v2 or later
+License URI:	http://www.gnu.org/licenses/gpl-2.0.html
+==============================
+TABLE CONTENT
+	HEADER
+		Topbar
+		Logo
+		Navigation
+		Spinner loading
+	FEATURED POST
+		Slider carausel
+		Slider fade
+		Slideshow big
+		Featured Grid
+		Recent post section
+	WIDGETS
+		Custom menu
+		Latest style 1
+		Latest style 2
+		Latest style 3
+		Search form
+		Tags
+		Pagination
+	BOTTOM
+	OFFCANVAS
+	FOOTER
+		Gototop
+		Search popup
+	HOME PAGE
+		Boxed layout
+		Home Grid 1
+	ARCHIVE LAYOUT
+		Archive list
+		Archive grid blance
+		Archive list big
+	POST STYLE
+		Comment
+	PAGES
+		Author page
+	HELPER
+		Row and column gap
+		Line
+==============================
+NOTE
+	Primary color: #e5633f;
+	Body font: 'IBM Plex Serif',serif;
+	Heading font: 'Playfair Display', serif;
+***/
 body {
 	background: #ffffff none repeat scroll 0 0;
 	color: #000000;

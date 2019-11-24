@@ -1,4 +1,6 @@
-
+/* -------------------------------------
+    Smart sticky
+     -------------------------------------- */
 ( function ( document, window, index )
 	{
 		'use strict';

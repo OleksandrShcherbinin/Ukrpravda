@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from concurrent.futures import ThreadPoolExecutor
 from requests_html import HTMLSession
+from django.contrib import messages
 from googletrans import Translator
 from datetime import datetime
 from threading import Lock
@@ -101,18 +102,22 @@ def news_scraper(qu):
                 with LOCKER:
                     try:
                         item = News.objects.create(**news)
-                        global COUNTER
+                        global COUNTER, NEWS_COUNTER
                         COUNTER += 1
                         print(f'[Item number {COUNTER} saved]', news["title"], news['news_date'])
 
                     except Exception as e:
                         print('Не удалось записать', type(e), e)
+                        NEWS_COUNTER -= COUNTER
+                        print(f'{NEWS_COUNTER} left to be parsed!')
                         return
 
-                for t in new_tags:
-                    tag = {'name': t, 'slug': t}
-                    tag, created = NewsTag.objects.get_or_create(**tag)
-                    item.news_tag.add(tag)
+                    for t in new_tags:
+                        tag = {'name': t, 'slug': t}
+                        tag, created = NewsTag.objects.get_or_create(**tag)
+                        item.news_tag.add(tag)
+                del response, title, news_text, reviews, slug, news, image_name, image_url, item, new_tags, new_tag, \
+                    date_time_obj, tags, prox, proxies, user_agent, headers, post_date
                     # logger.debug(item)
         except Exception as e:
             print(url)
@@ -138,8 +143,13 @@ def columns_scraper(qu):
                 title = response.text[h1_start: h1_end]
                 title = title.split(">")[-1]
                 news_text1 = response.text.index('<div class="post_news__text"')
-                news_text2 = response.text.index('<div class="post__tags">')
-                news_text = response.text[news_text1: news_text2]
+                try:
+                    news_text2 = response.text.index('<div class="post__tags">')
+                    news_text = response.text[news_text1: news_text2]
+                except Exception as e:
+                    news_text2 = response.text.index("Точка зору редакції УП може не збігатися з "
+                                                     "точкою зору автора колонки.")
+                    news_text = response.text[news_text1: news_text2 + 86]
                 news_text = news_text.split(">", maxsplit=1)
                 news_text = ''.join([f"<p>{p}</p>" for p in news_text[1].split("\n") if p])
                 slug = url.split('columns')[-1]
@@ -207,7 +217,7 @@ def columns_scraper(qu):
                         COUNTER += 1
                         print(f'[Item number {COUNTER} saved]', columns["title"], columns['column_date'])
                     except Exception as e:
-                        print('Не удалось записать', type(e), e)
+                        print('Не удалось записать', e, type(e))
                         return
                 for t in new_tags:
                     tag = {'name': t, 'slug': t}
@@ -217,6 +227,7 @@ def columns_scraper(qu):
                 authors = {'name': author, 'slug': author_slug}
                 authors, created = Author.objects.get_or_create(**authors)
                 item.author_tag.add(authors)
+
         except Exception as e:
             print(url)
             print(type(e))
@@ -241,8 +252,13 @@ def articles_scraper(qu):
                 title = response.text[h1_start: h1_end]
                 title = title.split(">")[-1]
                 news_text1 = response.text.index('<div class="post_news__text"')
-                news_text2 = response.text.index('<div class="post__tags">')
-                news_text = response.text[news_text1: news_text2]
+                try:
+                    news_text2 = response.text.index('<div class="post__tags">')
+                    news_text = response.text[news_text1: news_text2]
+                except Exception as e:
+                    news_text2 = response.text.index("Точка зору редакції УП може не збігатися з "
+                                                     "точкою зору автора колонки.")
+                    news_text = response.text[news_text1: news_text2 + 86]
                 news_text = news_text.split(">", maxsplit=1)
                 news_text = ''.join([f"<p>{p}</p>" for p in news_text[1].split("\n") if p])
                 slug = url.split('articles')[-1]
@@ -362,7 +378,7 @@ def get_news_links(start, task):
                         sitemap.write('\n'.join(urls))
                     break
             except Exception as e:
-                print(e)
+                print(type(e))
     if task:
         task.status = f'COLLECTED {num_links} TO TEXT FILE FOR BACK UP!'
         task.end_time = datetime.now()
@@ -447,6 +463,7 @@ def run_articles_scraper(start, task):
         task.end_time = datetime.now()
         task.save()
     print('ARTICLES COLLECTED!')
+    messages.add_message(messages.INFO, 'New Articles Needs To Be Moderated')
 
 
 class Command(BaseCommand):
@@ -470,3 +487,4 @@ class Command(BaseCommand):
         #    task.end_time = datetime.now()
         #    task.save()
         print('Done')
+

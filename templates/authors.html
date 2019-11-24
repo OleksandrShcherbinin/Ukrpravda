@@ -28,7 +28,7 @@
                                 {% for author in object_list %}
                                 <article class="row section_margin animate-box">
 									<div class="col-md-9 animate-box">
-										<h3 class="alith_post_title"><a href="{% url 'author' author.slug %}">{{ author.name | upper }}{{ author.author_tag__columns.count }}</a></h3>
+										<h3 class="alith_post_title"><a href="{% url 'author' author.slug %}">{{ author.name | upper }}</a></h3>
 									</div>
 								</article>
 								{% endfor %}

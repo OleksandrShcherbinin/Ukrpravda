@@ -11,7 +11,7 @@
                                     <div class="latest_style_3_item">
 									  <span class="item-count vertical-align">{{ forloop.counter }}</span>
 										<div class="alith_post_title_small">
-											<a href="{% url 's_article' comment.slug %}"><strong>{{ comment.title }}</strong></a>
+											<a href="{% url 's_article' comment.slug %}"><strong>{{ comment.title | truncatechars:25 }}</strong></a>
 										</div>
 									</div>
                                     {%endfor %}

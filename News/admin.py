@@ -5,7 +5,7 @@ from .models import *
 
 class NewsAdmin(SummernoteModelAdmin):
     summernote_fields = ('news_text',)
-    list_filter = ['parsing_date']
+    list_filter = ['news_date', 'parsing_date']
     list_display = ['title', 'news_date', 'parsing_date', 'source_reviews']
     list_editable = ['source_reviews']
     search_fields = ['news_text']

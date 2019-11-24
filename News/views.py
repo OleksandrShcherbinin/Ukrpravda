@@ -217,6 +217,12 @@ class AuthorView(ListView, SingleObjectMixin):
         else:
             return Columns.objects.filter(author_tag=self.object, moderated=True).order_by('-column_date')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        value = datetime.now().date()
+        context['value'] = value
+        return context
+
 
 class AuthorsView(ListView):
     template_name = 'authors.html'
@@ -243,15 +249,18 @@ class SearchView(ListView):
     paginate_by = 14
 
     def get_queryset(self):
-        query = self.request.GET.get('q')
+        query = self.request.GET.get('q', '')
         if query:
-            return News.objects.filter(title__icontains=query).order_by('-news_date')
+            result = News.objects.filter(title__icontains=query).order_by('-news_date')
+            return result
         else:
             return Http404()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         value = datetime.now().date()
+        query = self.request.GET.get('q', '')
+        context['query'] = query
         context['value'] = value
         return context
 
